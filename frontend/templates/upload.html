@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            background-image: {{ gradient }};
+        }
+    </style>
+</head>
+<body>
+
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <div class="file-input-container">
+            <label for="file" class="custom-file-upload" onclick="document.getElementById('file').click();">Browse File</label>
+            <input type="file" id="file" name="file" style="display: none;">
+        </div>
+        <input type="submit" style="background-image: {{ button_gradient }};" value="Upload Image">
+    </form>
+
+    
+
+</body>
+</html>
