@@ -5,8 +5,10 @@ import uuid
 
 
 filepath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-path = "/backend/images/textbook/"
+path = "/images/textbook/"
 filepath += path
+
+print(filepath)
 
 counter = 1
 for filename in os.listdir(filepath):
