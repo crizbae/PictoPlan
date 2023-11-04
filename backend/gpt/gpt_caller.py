@@ -1,6 +1,7 @@
 # write a program to use gpt-3.5 to generate some text based on a prompt
 # the prompt is a string of text
 # the output is a string of text
+import json
 import os
 from time import sleep
 from dotenv import load_dotenv
@@ -75,6 +76,19 @@ def create_chunks_from_string(string, encoding_name, chunk_size):
     chunks.append((chunk, num_tokens_from_string(chunk, encoding_name)))
     return chunks
 
+def load_json_from_files(path):
+    data = None
+    with open(path, "r") as f:
+        data = json.load(f)
+    
+    output = []
+    for k1 in data:
+        out = ""
+        for k2 in data[k1]:
+            out += data[k1][k2] + " "
+        output.append(out)
+    return output
+
 if __name__ == "__main__":
     # load API key from .env file
     load_dotenv()
@@ -82,10 +96,8 @@ if __name__ == "__main__":
     
     # default prompt
     prompt = ""
-    text = ""
-    # get text from romeo_juliet_act_1.txt
-    with open("romeo_juliet_act_1.txt", "r") as f:
-        text = f.read()
+    text = load_json_from_files("../json/ocr_output/sorted_data.json")[0]
+
     #remove newlines
     text = text.replace("\n", " ")
     # split text into chunks of 2000 tokens
@@ -93,13 +105,6 @@ if __name__ == "__main__":
     
     # Summarize each chunk and use previous summary as context for next chunk
     output = summarize_chunks(text_chunks, "Using the context of the previous text, summarize the new text: ")
-
-    # write summary to file
-    with open("summary.txt", "w") as f:
-        tmp = ""
-        for chunk in output:
-            tmp += chunk + "\n"
-        f.write(tmp)
     
     # Add up chunks from outputs such that each chunk is less than 3500 tokens
     lesson_chunks = []
@@ -126,7 +131,7 @@ if __name__ == "__main__":
     }'''
     lessons = create_lessons(lesson_chunks, prompt)
     
-    # write lessons to files
-    for i in range(0, len(lessons)):
-        with open("lesson" + str(i) + ".json", "w") as f:
+    # write lessons to files in ../json/gpt_output
+    for i in range(len(lessons)):
+        with open(f"../json/gpt_output/lesson_{i}.json", "w") as f:
             f.write(lessons[i])
