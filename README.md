@@ -1,5 +1,6 @@
 # PictoPlan - Automated Lesson Planning from Pictures
 
+<img src="logo.png" alt="Logo" style="width: 200px; float: initial;">
 
 ## Table of Contents
 
