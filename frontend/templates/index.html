@@ -1,12 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        h1,
+        h3 {
+            color: #333;
+        }
+
+        .prominent {
+            font-size: 1.25em;
+            font-weight: bold;
+            color: #f0f0f0;
+        }
+
+        h1 {
+            font-size: 2.3em;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 30px;
+            /* border: 50px solid #333; */
+            text-align: center;
+
+        }
+
+        h1 span {
+            background-color: #444;
+            padding: 15px;
+            border-radius: 10px;
+
+        }
+
+
+
+        .content {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 20px;
+        }
+
+        li::before {
+            content: "• ";
+            color: #333;
+            font-weight: bold;
+        }
+
+        p {
+            margin-left: 20px;
+        }
+
+        .materials {
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #333;
+                color: #f0f0f0;
+            }
+
+            .content {
+                background-color: #444;
+                color: #f0f0f0;
+            }
+
+            h1,
+            h3 {
+                color: #f0f0f0;
+            }
+
+            li::before {
+                color: #f0f0f0;
+            }
+
+            .materials {
+                border-color: #f0f0f0;
+            }
+
+        }
+    </style>
+</head>
+
 <body>
-    <h1>{{ data.Title }}</h1>
-    <h3>{{ data.Objective }}</h3>
-    <h3>{{ data.Materials }}</h3>
+        <h1><span>{{ data.Title }}</span></h1>
 
-    {% for key, value in data.Procedure.items() %}
-        <h3>{{ key }}</h3>
-        <h5>{{ value }}</h5>
-    {% endfor %}
+    <div class="content">
+        <p><span class="prominent">Objective:</span> {{ data.Objective }}</p>
+        <div class="materials">
+            <p><span class="prominent">Materials:</span> {{ data.Materials }}</p>
+        </div>
 
-    <h3>{{ data.Assessment }}</h3>
+        <ul>
+            <h3 class="prominent">Lesson Plan:</h3>
+            {% for key, value in data.Procedure.items() %}
+            <li>
+                {{ value }}</li>
+            {% endfor %}
+        </ul>
+        <hr>
+        <p><span class="prominent">Assessment: </span>{{ data.Assessment }}</p>
+    </div>
 </body>
+
+</html>
