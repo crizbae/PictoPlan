@@ -133,7 +133,9 @@ def finished():
             files[file] = encoded.decode('utf-8')
     # Send files to backend
     # Magic VooDoo
-    
+    # send post request to https://processor.pictoplan.org/processor/process with files
+    request = requests.post('https://processor.pictoplan.org/processor/process', json=files)
+
     if os.path.exists('temp'):
         shutil.rmtree('temp')
     return render_template('finished.html', got_urls=got_urls, urls=urls)
