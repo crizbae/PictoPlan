@@ -7,11 +7,6 @@ import re
 from tqdm import tqdm
 
 
-
-
-
-
-
 filepath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 path = "/images/textbook/"
 filepath += path
