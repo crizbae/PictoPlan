@@ -62,7 +62,9 @@ def create_lessons(lesson_chunks, prompt):
                     }
                 ]
         )
-        lessons.append(completion.choices[0]['message']['content'])
+        #turn the response into a json object
+        lesson = json.loads(completion.choices[0]['message']['content'])
+        lessons.append(lesson)
     return lessons
 
 def create_chunks_from_string(string, encoding_name, chunk_size):
@@ -132,6 +134,6 @@ if __name__ == "__main__":
     lessons = create_lessons(lesson_chunks, prompt)
     
     # write lessons to files in ../json/gpt_output
-    for i in range(len(lessons)):
-        with open(f"../json/gpt_output/lesson_{i}.json", "w") as f:
-            f.write(lessons[i])
+    with open(f"../json/gpt_output/lessons.json", "w") as f:
+        # write lessons to file with json.dumps
+        json.dump(lessons, f)

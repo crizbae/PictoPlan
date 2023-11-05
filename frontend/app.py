@@ -1,10 +1,13 @@
 # app.py
 import random
 import re
+import uuid
+import shutil
 from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
 import os
 import json
+import base64
 print(os.getcwd())
 
 app = Flask(__name__)
@@ -29,6 +32,9 @@ gradients.append(ur_gradient)
 
 weights = [1] * len(gradients)  # All gradients have equal weight
 weights[-1] = 0.001  # The last gradient (the rare one) has a weight of 0.0001
+session_uuid = uuid.uuid4()
+section = 1
+page = 1
 
 def hex_to_rgba(hex, opacity):
     hex = hex.lstrip('#')
@@ -56,16 +62,59 @@ def home():
     gradient = random.choices(gradients, weights=weights, k=1)[0]
     flipped_gradient = gradient.replace('to right', 'to left')
     button_gradient = gradient_to_rgba(flipped_gradient, 1)  # Change opacity to desired value
-    return render_template('upload.html', gradient=gradient, button_gradient=button_gradient)
+    return render_template('upload.html',
+                           gradient=gradient,
+                           button_gradient=button_gradient,
+                           page=page,
+                           section=section)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
+    global page
     if 'file' not in request.files:
         return 'No file part', 400
     file = request.files['file']
     filename = secure_filename(file.filename)
-    file.save(os.path.join('uploads', filename))
-    return 'File uploaded successfully'
+    # save file to 'uploads/image.png'
+    temp_dir = 'temp'
+    if not os.path.exists(temp_dir):
+        os.makedirs(temp_dir)
+    filename = str(session_uuid).replace('-', '') + '-' + str(section) + '-' + str(page) + '.png'
+    file.save(os.path.join(temp_dir, filename))
+    page += 1
+    return home()
+
+@app.route('/next-section', methods=['POST'])
+def next_section():
+    global section
+    global page
+    section += 1
+    page = 1
+    return home()
+
+@app.route('/finished', methods=['POST'])
+def finished():
+    # Send temp directory to backend
+    # Delete temp directory
+    global session_uuid
+    global section
+    global page
+    session_uuid = uuid.uuid4()
+    section = 1
+    page = 1
+    
+    # Convert files to base64 in a dict with key as name of file
+    files = {}
+    for file in os.listdir('temp'):
+        with open(os.path.join('temp', file), 'rb') as f:
+            encoded = base64.b64encode(f.read())
+            files[file] = encoded.decode('utf-8')
+    # Send files to backend
+    # Magic VooDoo
+    
+    if os.path.exists('temp'):
+        shutil.rmtree('temp')
+    return render_template('finished.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

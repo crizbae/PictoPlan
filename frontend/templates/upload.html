@@ -9,7 +9,7 @@
     </style>
 </head>
 <body>
-
+    <h3>Currently uploading page {{page}} of section {{section}}</h3>
     <form action="/upload" method="post" enctype="multipart/form-data">
         <div class="file-input-container">
             <label for="file" class="custom-file-upload" onclick="document.getElementById('file').click();">Browse File</label>
@@ -18,6 +18,13 @@
         <input type="submit" style="background-image: {{ button_gradient }};" value="Upload Image">
     </form>
 
-
+    <form action="/next-section" method="post">
+        <label for="next-section">Next section</label>
+        <input type="submit" id="next-section" name="next-section" value="Next Chapter/Section">
+    </form>
+    <form action="/finished" method="post">
+        <label for="finished">Finished</label>
+        <input type="submit" id="finished" name="finished" value="Finished Uploading?">
+    </form>
 </body>
 </html>
