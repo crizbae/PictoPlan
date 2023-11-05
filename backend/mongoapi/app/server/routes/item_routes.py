@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from ..database import collection
 from ..models.item import Item
-from ..database import retrieve_all_items, retrieve_item, update_item_in_db, delete_item_from_db                              
+from ..database import retrieve_all_items, retrieve_item, update_item_in_db, delete_item_from_db, retrieve_links                           
 
 router = APIRouter()
 
@@ -19,10 +19,19 @@ async def get_all_items():
     items = await retrieve_all_items()
     return items
 
+# get by frontend UUID
+@router.get("/items/session/{session_id}")
+async def get_item_by_session_id(session_id: str):
+    item = await retrieve_links(session_id)
+    if len(item) == 0:
+        raise HTTPException(status_code=404, detail="Items not found")
+    return item
+
+# get by link
 @router.get("/items/{item_id}")
 async def get_item_by_id(item_id: str):
     item = await retrieve_item(item_id)
-    if item is None:
+    if len(item) == 0:
         raise HTTPException(status_code=404, detail="Item not found")
     return item
 

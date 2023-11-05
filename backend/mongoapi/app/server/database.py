@@ -12,8 +12,20 @@ collection = database.users_collection
 def item_helper(item) -> dict:
     return {
         "id": str(item["_id"]),
-        "name": item["name"],
-        "description": item["description"]
+        "Title": item["Title"],
+        "Objective": item["Objective"],
+        "Materials": item["Materials"],
+        "Procedure": item["Procedure"],
+        "Assessment": item["Assessment"]
+    }
+
+def ret_link(item) -> dict:
+    return {
+        "Title": item["Title"],
+        "Objective": item["Objective"],
+        "Materials": item["Materials"],
+        "Procedure": item["Procedure"],
+        "Assessment": item["Assessment"]
     }
 
 async def retrieve_all_items():
@@ -25,7 +37,14 @@ async def retrieve_all_items():
 
 async def retrieve_item(item_id: str):
     cursor = collection.find_one({"_id": ObjectId(item_id)})
-    return [item_helper(cursor)]
+    return [ret_link(cursor)]
+
+async def retrieve_links(session_id: str):
+    cursor = collection.find({"SessionId": session_id})
+    links = []
+    for item in cursor:
+        links.append(str(item["_id"]))
+    return links
 
 async def update_item_in_db(item_id: str, updated_item: dict) -> bool:
     cursor = collection.update_one({"_id": ObjectId(item_id)}, {"$set": updated_item})

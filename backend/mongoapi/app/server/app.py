@@ -4,7 +4,7 @@ from .routes.item_routes import router as item_routes
 app = FastAPI()
 
 # Include the router defined in routes.py
-app.include_router(item_routes, tags=["User"], prefix="/user")
+app.include_router(item_routes, tags=["Item"], prefix="/item")
 
 @app.get("/", tags=["Root"])
 async def read_root():
