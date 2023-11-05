@@ -8,10 +8,8 @@ from werkzeug.utils import secure_filename
 import os
 import json
 import base64
-print(os.getcwd())
 
 app = Flask(__name__)
-
 gradients = [
     'linear-gradient(to right, #0f2027, #203a43, #2c5364)',
     'linear-gradient(to right, #283048, #859398)',
@@ -33,6 +31,7 @@ gradients.append(ur_gradient)
 weights = [1] * len(gradients)  # All gradients have equal weight
 weights[-1] = 0.001  # The last gradient (the rare one) has a weight of 0.0001
 session_uuid = uuid.uuid4()
+first_time = True
 section = 1
 page = 1
 
@@ -59,6 +58,10 @@ def serve_json(filename):
 
 @app.route('/')
 def home():
+    # if first time, user then display modal
+    global first_time
+    modal = first_time
+    # first_time = False
     gradient = random.choices(gradients, weights=weights, k=1)[0]
     flipped_gradient = gradient.replace('to right', 'to left')
     button_gradient = gradient_to_rgba(flipped_gradient, 1)  # Change opacity to desired value
@@ -66,7 +69,8 @@ def home():
                            gradient=gradient,
                            button_gradient=button_gradient,
                            page=page,
-                           section=section)
+                           section=section,
+                           show_modal=modal)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
