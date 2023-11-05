@@ -3,11 +3,12 @@ import random
 import re
 import uuid
 import shutil
-from flask import Flask, render_template, request
+from flask import Flask, jsonify, render_template, request
 from werkzeug.utils import secure_filename
 import os
 import json
 import base64
+import requests
 
 app = Flask(__name__)
 gradients = [
@@ -34,6 +35,7 @@ session_uuid = uuid.uuid4()
 first_time = True
 section = 1
 page = 1
+got_urls = False
 
 def hex_to_rgba(hex, opacity):
     hex = hex.lstrip('#')
@@ -47,21 +49,26 @@ def gradient_to_rgba(gradient, opacity):
         gradient = gradient.replace(hex_color, rgba_color)
     return gradient
 
-@app.route('/json/<filename>')
-def serve_json(filename):
-    # Read the JSON file
-    with open('json/' + filename + '.json') as json_file:
-        data = json.load(json_file)
-
-    # Pass the data to the template
-    return render_template('index.html', data=data)
+@app.route('/plan')
+def serve_json():
+    item_id = request.args.get('uuid', default=None, type=str)
+    if item_id is None:
+        return "UUID not provided", 400
+    # send get request to https://mongo.pictoplan.org/item/{{item_id}}
+    result = requests.get('https://mongo.pictoplan.org/item/' + str(item_id))
+    # if request is successful, then we got data, it returns a json object
+    if result.status_code == 200:
+        data = result.json()[0]
+        return render_template('index.html', data=data)
+    else:
+        return 'Error', 400
 
 @app.route('/')
 def home():
     # if first time, user then display modal
     global first_time
     modal = first_time
-    # first_time = False
+    first_time = False
     gradient = random.choices(gradients, weights=weights, k=1)[0]
     flipped_gradient = gradient.replace('to right', 'to left')
     button_gradient = gradient_to_rgba(flipped_gradient, 1)  # Change opacity to desired value
@@ -103,9 +110,20 @@ def finished():
     global session_uuid
     global section
     global page
+    global got_urls
     session_uuid = uuid.uuid4()
     section = 1
     page = 1
+    # Check if we got URLs
+    # send get request to https://mongo.pictoplan.org/item/session/{{session_uuid}}
+    request = requests.get('https://mongo.pictoplan.org/item/session/' + str(session_uuid))
+    urls = []
+    # if request is successful, then we got urls, it returns an array of urls
+    if request.status_code == 200:
+        got_urls = True
+        urls = request.json()
+    else:
+        got_urls = False
     
     # Convert files to base64 in a dict with key as name of file
     files = {}
@@ -118,7 +136,27 @@ def finished():
     
     if os.path.exists('temp'):
         shutil.rmtree('temp')
-    return render_template('finished.html')
+    return render_template('finished.html', got_urls=got_urls, urls=urls)
+
+@app.route('/check_urls', methods=['GET'])
+def check_urls():
+    global got_urls
+    # Replace this with your actual logic to check for URLs in the database
+    got_urls = False
+    
+    # send get request to https://mongo.pictoplan.org/item/session/{{session_uuid}}
+    request = requests.get('https://mongo.pictoplan.org/item/session/' + str(session_uuid))
+
+    # if request is successful, then we got urls, it returns an array of urls
+    if request.status_code == 200:
+        got_urls = True
+    else:
+        got_urls = False
+
+    if got_urls:
+        return jsonify({'status': 'success'})
+    else:
+        return jsonify({'status': 'waiting'})
 
 if __name__ == '__main__':
     app.run(debug=True)

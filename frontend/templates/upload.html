@@ -47,9 +47,9 @@
             <h1 style="white-space: nowrap;"><span class="centered-text">Welcome to PictoPlan</span></h1>        </div>
         <h3>Currently uploading page {{page}} of section {{section}}</h3>
         <div class="forms">
-            <form class="form" action="/upload" method="post" enctype="multipart/form-data">
+            <form class="form"  action="/upload" method="post" enctype="multipart/form-data">
                 <input type="file" id="file" name="file">
-                <input type="submit" style="background-image: {{ button_gradient }};" value="Upload Image">
+                <input type="submit" id="filesubmit" style="background-image: {{ button_gradient }};" value="Upload Image">
             </form>
 
             <form class="form" action="/next-section" method="post">
@@ -63,6 +63,7 @@
             </form>
         </div>
     </div>
+
 
     <script defer>
         window.onload = function() {
