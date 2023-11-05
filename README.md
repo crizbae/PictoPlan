@@ -5,7 +5,7 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
-= [Technology] (#technology)
+- [Technology](#technology)
 - [Features](#features)
 - [License](#license)
 ## Introduction

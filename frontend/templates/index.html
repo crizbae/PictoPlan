@@ -29,6 +29,7 @@
             margin-bottom: 30px;
             /* border: 50px solid #333; */
             text-align: center;
+            white-space: normal;
 
         }
 
@@ -36,6 +37,7 @@
             background-color: #444;
             padding: 15px;
             border-radius: 10px;
+            white-space: normal;
 
         }
 
@@ -99,11 +101,43 @@
             }
 
         }
+
+        footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px;
+            background: #333;
+            color: white;
+            font-weight: 500;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.2rem;
+        }
+
+        footer a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .footer-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .image-text-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
     </style>
 </head>
 
 <body>
-        <h1><span>{{ data.Title }}</span></h1>
+    <h1><span>{{ data.Title }}</span></h1>
 
     <div class="content">
         <p><span class="prominent">Objective:</span> {{ data.Objective }}</p>
@@ -121,6 +155,16 @@
         <hr>
         <p><span class="prominent">Assessment: </span>{{ data.Assessment }}</p>
     </div>
-</body>
+    <footer>
+        <div class="footer-content">
+            <a href="https://github.com/crizbae/PictoPlan" target="_blank">
+                <div class="image-text-wrapper">
+                    <img src="{{url_for('static', filename='github-icon.png')}}" alt="Github"
+                        style="width: 30px; height: 30px;" />
+                    <span>PictoPlan</span>
+                </div>
+            </a>
+        </div>
+    </footer>
 
 </html>
