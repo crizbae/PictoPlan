@@ -7,14 +7,18 @@ body {
     align-items: center;
     height: 100vh;
 }
-h3 {
-    text-align: center;
+
+.hero {
+    display: flex;
+    flex-direction: column;
 }
-form {
+
+.form {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 10px;
     background-color: rgba(255, 255, 255, 0.2);
     padding: 20px;
     border-radius: 5px;
@@ -23,7 +27,11 @@ form {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 }
 
-form label {
+h3 {
+    text-align: center;
+}
+
+.form label {
     font-size: 20px;
     margin-bottom: 10px;
     color: white;
@@ -40,6 +48,7 @@ input[type="file"] {
 .file-input-container {
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 input[type="submit"] {
