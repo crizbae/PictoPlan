@@ -1,0 +1,12 @@
+<body>
+    <h1>{{ data.Title }}</h1>
+    <h3>{{ data.Objective }}</h3>
+    <h3>{{ data.Materials }}</h3>
+
+    {% for key, value in data.Procedure.items() %}
+        <h3>{{ key }}</h3>
+        <h5>{{ value }}</h5>
+    {% endfor %}
+
+    <h3>{{ data.Assessment }}</h3>
+</body>

@@ -4,6 +4,8 @@ import re
 from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
 import os
+import json
+print(os.getcwd())
 
 app = Flask(__name__)
 
@@ -40,6 +42,14 @@ def gradient_to_rgba(gradient, opacity):
         gradient = gradient.replace(hex_color, rgba_color)
     return gradient
 
+@app.route('/json/<filename>')
+def serve_json(filename):
+    # Read the JSON file
+    with open('json/' + filename + '.json') as json_file:
+        data = json.load(json_file)
+
+    # Pass the data to the template
+    return render_template('index.html', data=data)
 
 @app.route('/')
 def home():
