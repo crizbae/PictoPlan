@@ -4,6 +4,7 @@ from time import sleep
 from dotenv import load_dotenv
 import openai
 import tiktoken
+import re
 
 def num_tokens_from_string(string: str, encoding_name: str) -> int:
     encoding = tiktoken.encoding_for_model(encoding_name)
@@ -40,7 +41,13 @@ def summarize_chunks(text_chunks, prompt):
             sleep(60)
             tokens_called = 0
     return output
-            
+
+def clean_json(string):
+    string = re.sub(",[ \t\r\n]+}", "}", string)
+    string = re.sub(",[ \t\r\n]+\]", "]", string)
+
+    return string
+
 def create_lessons(lesson_chunks, prompt):
     lessons = []
     for chunk in lesson_chunks:
@@ -60,7 +67,7 @@ def create_lessons(lesson_chunks, prompt):
                 ]
         )
         #turn the response into a json object
-        lesson = json.loads(completion.choices[0]['message']['content'])
+        lesson = json.loads(clean_json(completion.choices[0]['message']['content']))
         lessons.append(lesson)
     return lessons
 
@@ -120,5 +127,7 @@ def gpt_caller(input_object):
             "Assessment": "A brief description of how the student will be assessed"
         }'''
         lessons += create_lessons(lesson_chunks, prompt)
+    
+    lessons = [json.dumps(lesson) for lesson in lessons]
         
     return lessons
