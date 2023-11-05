@@ -5,6 +5,7 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
+= [Technology] (#technology)
 - [Features](#features)
 - [License](#license)
 ## Introduction
@@ -12,6 +13,10 @@
 PictoPlan is an innovative web-based platform designed for educators to simplify the process of generating lesson plans from  books or textbooks. It automates the traditionally time-consuming task of converting visual content into educational material, allowing teachers to focus on teaching rather than manual content creation.
 
 With PictoPlan, you can effortlessly upload pictures from books or textbooks, and our system will automatically generate lesson plans tailored to the content, saving you valuable time and ensuring a consistent, high-quality educational experience.
+
+## Technology
+
+We make use of ...
 
 ## Features
 
