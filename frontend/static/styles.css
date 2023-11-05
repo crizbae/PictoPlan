@@ -7,14 +7,18 @@ body {
     align-items: center;
     height: 100vh;
 }
-h3 {
-    text-align: center;
+
+.hero {
+    display: flex;
+    flex-direction: column;
 }
-form {
+
+.form {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 10px;
     background-color: rgba(255, 255, 255, 0.2);
     padding: 20px;
     border-radius: 5px;
@@ -23,7 +27,11 @@ form {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 }
 
-form label {
+h3 {
+    text-align: center;
+}
+
+.form label {
     font-size: 20px;
     margin-bottom: 10px;
     color: white;
@@ -40,6 +48,7 @@ input[type="file"] {
 .file-input-container {
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 input[type="submit"] {
@@ -56,4 +65,65 @@ input[type="submit"] {
     mix-blend-mode: soft-light;
     text-shadow: 2px 2px 4px rgba(0, 0, 0);
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 70%;
+}
+.centered-text {
+    display: inline-flex;
+    justify-content: center;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.centered-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
 }

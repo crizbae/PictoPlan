@@ -9,22 +9,87 @@
     </style>
 </head>
 <body>
-    <h3>Currently uploading page {{page}} of section {{section}}</h3>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <div class="file-input-container">
-            <label for="file" class="custom-file-upload" onclick="document.getElementById('file').click();">Browse File</label>
-            <input type="file" id="file" name="file" style="display: none;">
-        </div>
-        <input type="submit" style="background-image: {{ button_gradient }};" value="Upload Image">
-    </form>
 
-    <form action="/next-section" method="post">
-        <label for="next-section">Next section</label>
-        <input type="submit" id="next-section" name="next-section" value="Next Chapter/Section">
-    </form>
-    <form action="/finished" method="post">
-        <label for="finished">Finished</label>
-        <input type="submit" id="finished" name="finished" value="Finished Uploading?">
-    </form>
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="centered-content">
+        <div style="display: flex; align-items: center; margin-left: -13%;">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="PictoPlan Logo" style="width: 130px; height: 130px; margin-right: 10%;">
+            <h1><span class="centered-text">Welcome to PictoPlan</span></h1>        </div>        <!-- Add logo to the right of the h1 -->
+        <ul>
+            <li style="list-style-type: none;">
+                <strong>Upload Images:</strong> Upload each image with the correct page and section number. 
+            </li>
+            <li style="list-style-type: none;">
+                <strong>Next Section:</strong> Once you have finished uploading all the images for a section, click the next section button to move on to the next section.
+            </li>
+            <li style="list-style-type: none;">
+                <strong>Finished:</strong> Once you have finished uploading all the images for the book, click the finished button to finish the upload process.
+            </li>
+            <li style="list-style-type: none;">
+                <strong>Automatic Analysis:</strong> PictoPlan's system will automatically analyze the uploaded images to create a lesson plan.
+            </li>
+            <li style="list-style-type: none;">
+                <strong>Permanent Links:</strong> PictoPlan will provide you with permanent links to the lesson plans, make sure to save those links.
+            </li>
+        </ul></div>
+        </div>
+    
+    </div>
+    
+    <div class="hero">
+        <div style="display: flex; align-items: center; margin-left: -30%;">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="PictoPlan Logo" style="width: 200px; height: 200px; margin-right: 10%;">
+            <h1 style="white-space: nowrap;"><span class="centered-text">Welcome to PictoPlan</span></h1>        </div>
+        <h3>Currently uploading page {{page}} of section {{section}}</h3>
+        <div class="forms">
+            <form class="form" action="/upload" method="post" enctype="multipart/form-data">
+                <input type="file" id="file" name="file">
+                <input type="submit" style="background-image: {{ button_gradient }};" value="Upload Image">
+            </form>
+
+            <form class="form" action="/next-section" method="post">
+                <label for="next-section">Next section</label>
+                <input type="submit" id="next-section" name="next-section" value="Next Chapter/Section">
+            </form>
+
+            <form class="form" action="/finished" method="post">
+                <label for="finished">Finished</label>
+                <input type="submit" id="finished" name="finished" value="Finished Uploading?">
+            </form>
+        </div>
+    </div>
+
+    <script defer>
+        window.onload = function() {
+            // Get the modal
+            var modal = document.getElementById("myModal");
+
+            // Get the <span> element that closes the modal
+            var span = document.getElementsByClassName("close")[0];
+
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function() {
+                modal.style.display = "none";
+            }
+
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+        }
+    </script>
+    {% if show_modal %}
+    <script defer>
+        // Trigger the modal to show
+        document.getElementById('myModal').style.display = 'block';
+    </script>
+    {% endif %}
 </body>
 </html>
