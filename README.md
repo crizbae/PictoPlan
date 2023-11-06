@@ -17,7 +17,9 @@ With PictoPlan, you can effortlessly upload pictures from books or textbooks, an
 ## Technology
 
 We make use of CloudFlare, FastAPI, Flask, Heroku, MongoDB, OpenAI's API, and Google's Tesseract!
+
 We code in Python, CSS, and HTML!
+
 
 ## Features
 
