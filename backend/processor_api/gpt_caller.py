@@ -1,10 +1,10 @@
 import json
-import os
 from time import sleep
 from dotenv import load_dotenv
-import openai
+from openai import OpenAI
 import tiktoken
 import re
+
 
 def num_tokens_from_string(string: str, encoding_name: str) -> int:
     encoding = tiktoken.encoding_for_model(encoding_name)
@@ -12,81 +12,104 @@ def num_tokens_from_string(string: str, encoding_name: str) -> int:
     return num_tokens
 
 
-def summarize_chunks(text_chunks, prompt):
+def summarize_chunks(text_chunks, client, model):
     context = ""
     output = []
     tokens_called = 0
     for chunk in text_chunks:
-        completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+        completion = client.chat.completions.create(
+            model=model,
             temperature=0.2,
-            max_tokens=1000,
             messages=[
                 {
                     "role": "system",
-                    "content": context + prompt
+                    "content": context + "using the context of the previous text, summarize the new text: "
                 },
                 {
                     "role": "user",
-                    "content": chunk[0]
+                    "content": "Summarize the following text " + chunk[0]
                 }
             ]
         )
         # response is an OpenAI object get the text from it
-        response = completion.choices[0]['message']['content']
+        response = completion.choices[0].message.content
         context = "Here is a summary of the previous text: " + response + " "
         output.append(response)
-        tokens_called += chunk[1]
-        if tokens_called > 80000:
+        tokens_called += completion.usage.total_tokens
+        if tokens_called > 60000:
             sleep(60)
             tokens_called = 0
     return output
 
+
 def clean_json(string):
     string = re.sub(",[ \t\r\n]+}", "}", string)
     string = re.sub(",[ \t\r\n]+\]", "]", string)
-
     return string
 
-def create_lessons(lesson_chunks, prompt):
+
+def create_lessons(lesson_chunks, client, model):
     lessons = []
+    tokens_called = 0
+    system_prompt = "Using the following summary create a lesson plan that helps students understand the text. The lesson plan should be written in a way that is easy for students to understand. Do not include any explanations, only provide a RFC8259 compliant JSON response with the following structure. "
+    system_prompt += '''{
+        "Title": "The title of the lesson",
+        "Objective": "A brief description of the lesson objective",
+        "Materials": "A brief description of the materials needed for the lesson",
+        "Procedure": {
+            "Step One": "Procedure step description",
+            "Step Two": "Procedure step description",
+            "...": "..."
+        },
+        "Assessment": "A brief description of how the student will be assessed"
+    }'''
     for chunk in lesson_chunks:
-        completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+        completion = client.chat.completions.create(
+            model=model,
             temperature=0.2,
-                max_tokens=1000,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": prompt
-                    },
-                    {
-                        "role": "user",
-                        "content": chunk
-                    }
-                ]
+            response_format={"type": "json_object"},
+            messages=[
+                {
+                    "role": "system",
+                    "content": system_prompt
+                },
+                {
+                    "role": "user",
+                    "content": chunk
+                }
+            ]
         )
-        #turn the response into a json object
-        lesson = json.loads(clean_json(completion.choices[0]['message']['content']))
+        # turn the response into a json object
+        clean_content = clean_json(completion.choices[0].message.content)
+        lesson = json.loads(clean_content)
         lessons.append(lesson)
+        tokens_called += completion.usage.total_tokens
+        if tokens_called > 60000:
+            sleep(60)
+            tokens_called = 0
     return lessons
+
 
 def create_chunks_from_string(string, encoding_name, chunk_size):
     chunks = []
     chunk = ""
     for word in string.split(" "):
         if num_tokens_from_string(chunk + word, encoding_name) > chunk_size:
-            chunks.append((chunk, num_tokens_from_string(chunk, encoding_name)))
+            chunks.append(
+                (chunk, num_tokens_from_string(chunk, encoding_name)))
             chunk = ""
         chunk += word + " "
     chunks.append((chunk, num_tokens_from_string(chunk, encoding_name)))
     return chunks
 
+
 def gpt_caller(input_object):
     # load API key from .env file
     load_dotenv()
-    openai.api_key = os.getenv("OPENAI_API_KEY")
-    
+    client = OpenAI()
+    model = "gpt-3.5-turbo-1106"
+    model_token_limit = 16000
+
     lessons = []
     for k in input_object:
         all_text = input_object[k]
@@ -95,39 +118,28 @@ def gpt_caller(input_object):
         for t in all_text:
             text += all_text[t] + "\n"
         prompt = ""
-        #remove newlines
+        # remove newlines
         text = text.replace("\n", " ")
-        # split text into chunks of 2000 tokens
-        text_chunks = create_chunks_from_string(text, "gpt-3.5-turbo", 2000)
-        
+        # split text into chunks of a little less than half the token limit
+        text_chunks = create_chunks_from_string(
+            text, model, model_token_limit / 2.2)
+
         # Summarize each chunk and use previous summary as context for next chunk
-        output = summarize_chunks(text_chunks, "Using the context of the previous text, summarize the new text: ")
-        
-        # Add up chunks from outputs such that each chunk is less than 3500 tokens
+        output = summarize_chunks(text_chunks, client, model)
+
+        # Add up chunks from outputs such that each chunk is less than 2 / 3 of the token limit
         lesson_chunks = []
         chunk = ""
         for summary in output:
-            if num_tokens_from_string(chunk + summary, "gpt-3.5-turbo") > 3500:
+            if num_tokens_from_string(chunk + summary, model) > model_token_limit * (2 / 3):
                 lesson_chunks.append(chunk)
                 chunk = ""
             chunk += summary + " "
         lesson_chunks.append(chunk)
-        
+
         # Now create a lesson plan based on the summary
-        prompt = "Using the following summary create a lesson plan that helps students understand the text. The lesson plan should be written in a way that is easy for students to understand. Do not include any explanations, only provide a RFC8259 compliant JSON response with the following structure. "
-        prompt += '''{
-            "Title": "The title of the lesson",
-            "Objective": "A brief description of the lesson objective",
-            "Materials": "A brief description of the materials needed for the lesson",
-            "Procedure": {
-                "Step One": "Procedure step description",
-                "Step Two": "Procedure step description",
-                "...": "..."
-            },
-            "Assessment": "A brief description of how the student will be assessed"
-        }'''
-        lessons += create_lessons(lesson_chunks, prompt)
-    
+        lessons += create_lessons(lesson_chunks, client, model)
+
     lessons = [json.dumps(lesson) for lesson in lessons]
-        
+
     return lessons
