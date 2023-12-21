@@ -2,8 +2,8 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from decouple import config
 
-MONGO_DETAILS = config("MONGO_DETAILS")
-client = MongoClient(MONGO_DETAILS)
+MONGO_URI = config("MONGO_URI")
+client = MongoClient(MONGO_URI)
 
 # Define your database and collections here
 database = client.users
