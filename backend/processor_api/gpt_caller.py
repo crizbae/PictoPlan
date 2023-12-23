@@ -48,7 +48,7 @@ def clean_json(string):
     return string
 
 
-def create_lessons(lesson_chunks, client, model):
+def create_lessons(lesson_chunks, client, model, grade_level, custom_prompt):
     lessons = []
     tokens_called = 0
     system_prompt = "Using the following summary create a lesson plan that helps students understand the text. The lesson plan should be written in a way that is easy for students to understand. Do not include any explanations, only provide a RFC8259 compliant JSON response with the following structure. "
@@ -56,13 +56,18 @@ def create_lessons(lesson_chunks, client, model):
         "Title": "The title of the lesson",
         "Objective": "A brief description of the lesson objective",
         "Materials": "A brief description of the materials needed for the lesson",
+        "Assessment": "A brief description of how the student will be assessed"
         "Procedure": {
             "Step One": "Procedure step description",
             "Step Two": "Procedure step description",
             "...": "..."
-        },
-        "Assessment": "A brief description of how the student will be assessed"
+        }
     }'''
+    if grade_level != "":
+        system_prompt += " The lesson plan should be appropriate for students in the " + \
+            grade_level + " grade."
+    if custom_prompt != "":
+        system_prompt += " " + custom_prompt
     for chunk in lesson_chunks:
         completion = client.chat.completions.create(
             model=model,
@@ -102,8 +107,8 @@ def create_chunks_from_string(string, encoding_name, chunk_size):
     chunks.append((chunk, num_tokens_from_string(chunk, encoding_name)))
     return chunks
 
-
-def gpt_caller(input_object):
+# Grade level should be a string that is "K, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12"
+def gpt_caller(input_object, grade_level="", custom_prompt=""):
     # load API key from .env file
     load_dotenv()
     client = OpenAI()
@@ -112,12 +117,12 @@ def gpt_caller(input_object):
 
     lessons = []
     for k in input_object:
+        grade_level = k
         all_text = input_object[k]
         # add all the texts together
         text = ""
         for t in all_text:
             text += all_text[t] + "\n"
-        prompt = ""
         # remove newlines
         text = text.replace("\n", " ")
         # split text into chunks of a little less than half the token limit
@@ -138,7 +143,7 @@ def gpt_caller(input_object):
         lesson_chunks.append(chunk)
 
         # Now create a lesson plan based on the summary
-        lessons += create_lessons(lesson_chunks, client, model)
+        lessons += create_lessons(lesson_chunks, client, model, grade_level, custom_prompt)
 
     lessons = [json.dumps(lesson) for lesson in lessons]
 
