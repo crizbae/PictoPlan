@@ -16,6 +16,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    flex-shrink: 0; 
 }
 
 .sidebar ul {
@@ -43,4 +44,50 @@ body {
 .sidebar-item {
     padding: 10px;
     font-size: 24px;
+}
+
+.logo {
+    width: 200px; /* Adjust as needed */
+    height: auto; /* Maintain aspect ratio */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.image-uploader {
+    padding:20px;
+}
+.drop-zone {
+    display: flex;
+    height: 200px;
+    width: 200px;
+    background: white;
+    /* background-image: url("/icons/upload.png"); */
+    background-repeat: no-repeat;
+    background-size: 100px;
+    background-position: center;
+    background-color: #ffffff;
+    cursor: pointer;
+    border: 2px dashed #ccc;
+    border-radius: 6px;
+    margin-bottom: 25px;
+    background-position: center 28px;
+}
+.drop-zone>p {
+    margin: auto;
+    color: #000;
+}
+.preview{
+   width: 200px;
+   height: 200px;
+   border-radius: 4px;
+   display: block;
+   object-fit: cover;
+   position: relative; 
+}
+.preview img {
+   width: 100%;
+   height: 100%;
+   border-radius: 4px;
+   object-fit: cover;
 }
