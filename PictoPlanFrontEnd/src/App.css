@@ -62,7 +62,6 @@ body {
     height: 200px;
     width: 200px;
     background: white;
-    /* background-image: url("/icons/upload.png"); */
     background-repeat: no-repeat;
     background-size: 100px;
     background-position: center;
@@ -80,7 +79,6 @@ body {
 .preview{
    width: 200px;
    height: 200px;
-   border-radius: 4px;
    display: block;
    object-fit: cover;
    position: relative; 
@@ -88,6 +86,16 @@ body {
 .preview img {
    width: 100%;
    height: 100%;
-   border-radius: 4px;
    object-fit: cover;
+}
+
+.page-text {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    background-color: #000;
+    color: #fff;
+    margin: 0;
+    padding: 5px;
+    z-index: 1;
 }

@@ -6,8 +6,6 @@ interface ImageUploaderProps {
 }
 
 const ImageUploader: React.FunctionComponent<ImageUploaderProps> = ({ onFileChange }) => {
-
-    const [image, setImage] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -21,7 +19,6 @@ const ImageUploader: React.FunctionComponent<ImageUploaderProps> = ({ onFileChan
 
     const handleFile = (file: File | null) => {
         if (file) {
-            setImage(file);
             setImagePreview(URL.createObjectURL(file));
             if (onFileChange) {
                 onFileChange(file);
@@ -34,9 +31,6 @@ const ImageUploader: React.FunctionComponent<ImageUploaderProps> = ({ onFileChan
     }
 
     const handleOnDrop = (event: React.DragEvent<HTMLDivElement>) => {
-        event.preventDefault()
-        event.stopPropagation()
-
         const imageFile = event.dataTransfer.files[0];
         handleFile(imageFile);
     }
@@ -52,7 +46,6 @@ const ImageUploader: React.FunctionComponent<ImageUploaderProps> = ({ onFileChan
 
     const handleDelete = () => {
         setImagePreview(null);
-        setImage(null);
         if (onFileChange) {
             onFileChange(null);
         }
@@ -64,7 +57,6 @@ const ImageUploader: React.FunctionComponent<ImageUploaderProps> = ({ onFileChan
                 imagePreview ? (
                     <div className='preview'>
                         <img src={imagePreview} alt='Preview of Image' />
-                        <span>{image?.name}</span>
                         <button onClick={handleDelete} style={{
                             position: 'absolute',
                             top: '10px',
@@ -75,7 +67,7 @@ const ImageUploader: React.FunctionComponent<ImageUploaderProps> = ({ onFileChan
                         </button>
                     </div>
                 ) : (
-                    <div>
+                    <div className='preview'>
                         <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{ display: 'none' }} />
                         <div className='drop-zone' onDragOver={handleDragOver} onDrop={handleOnDrop} onClick={handleClick}>
                             <p>Drag and drop image here...</p>
