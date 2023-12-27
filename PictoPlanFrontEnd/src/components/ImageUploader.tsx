@@ -33,6 +33,7 @@ const ImageUploader: React.FunctionComponent<ImageUploaderProps> = ({ onFileChan
     const handleOnDrop = (event: React.DragEvent<HTMLDivElement>) => {
         const imageFile = event.dataTransfer.files[0];
         handleFile(imageFile);
+        event.preventDefault();
     }
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
